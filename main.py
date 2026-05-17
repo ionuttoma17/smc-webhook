@@ -1,7 +1,5 @@
 from flask import Flask, request
 import requests
-import threading
-import time
 
 app = Flask(__name__)
 
@@ -12,14 +10,6 @@ def send_telegram(message):
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
     data = {"chat_id": TELEGRAM_CHAT_ID, "text": message}
     requests.post(url, data=data)
-
-def keep_alive():
-    while True:
-        try:
-            requests.get("https://smc-webhook.onrender.com/ping")
-        except:
-            pass
-        time.sleep(240)
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
@@ -37,10 +27,6 @@ def ping():
 @app.route("/", methods=["GET"])
 def index():
     return "SMC Webhook activ!", 200
-
-t = threading.Thread(target=keep_alive)
-t.daemon = True
-t.start()
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
